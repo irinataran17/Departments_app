@@ -32,6 +32,23 @@ app.get('/departments', async (req, res) => {
     }
 });
 
+app.patch('/departments/:id', async (req, res) => {
+    const id = req.params.id;
+    const body = _.pick(req.body, ['name', 'purpose']);
+    if (!ObjectId.isValid(id)) {
+        return res.status(404).send();
+    }
+    try {
+        const department = await Department.findOneAndUpdate({_id: id}, {$set: body}, {new: true});
+        if (!department) {
+            return res.status(404).send();
+        }
+        res.send(department);
+    } catch (e) {
+        res.status(400).send(e);
+    }
+});
+
 app.delete('/departments/:id', async (req, res) => {
     const id = req.params.id;
     if (!ObjectId.isValid(id)) {
@@ -80,6 +97,23 @@ app.get('employees/:id', async (req, res) => {
         const employee = await Employee.findOne({
             _id: id
         });
+        res.send(employee);
+    } catch (e) {
+        res.status(400).send(e);
+    }
+});
+
+app.patch('/employees/:id', async (req, res) => {
+    const id = req.params.id;
+    const body = _.pick(req.body, ['name', 'jobTitle', 'email', 'department']);
+    if (!ObjectId.isValid(id)) {
+        return res.status(404).send();
+    }
+    try {
+        const employee = await Employee.findOneAndUpdate({_id: id}, {$set: body}, {new: true});
+        if (!employee) {
+            return res.status(404).send();
+        }
         res.send(employee);
     } catch (e) {
         res.status(400).send(e);
