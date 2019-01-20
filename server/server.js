@@ -32,6 +32,24 @@ app.get('/departments', async (req, res) => {
     }
 });
 
+app.delete('/departments/:id', async (req, res) => {
+    const id = req.params.id;
+    if (!ObjectId.isValid(id)) {
+        return res.status(404).send();
+    }
+    try {
+        const department = await Department.findByIdAndRemove({
+            _id: id
+        });
+        if (!department) {
+            return res.status(404).send();
+        }
+        res.send(department);
+    } catch (e) {
+        res.status(400).send(e);
+    }
+});
+
 app.post('/employees', async (req, res) => {
     try {
         const body = _.pick(req.body, ['name', 'jobTitle', 'email', 'department']);
@@ -43,6 +61,7 @@ app.post('/employees', async (req, res) => {
     }
 });
 
+//return list of all employees
 app.get('/employees', async (req, res) => {
     try {
         const employees = await Employee.find();
@@ -52,7 +71,41 @@ app.get('/employees', async (req, res) => {
     }
 });
 
-app.get('/department/:id', async (req, res) => {
+app.get('employees/:id', async (req, res) => {
+    const id = req.params.id;
+    if (!ObjectId.isValid(id)) {
+        return res.status(404).send();
+    }
+    try {
+        const employee = await Employee.findOne({
+            _id: id
+        });
+        res.send(employee);
+    } catch (e) {
+        res.status(400).send(e);
+    }
+});
+
+app.delete('employees/:id', async (req, res) => {
+    const id = req.params.id;
+    if (!ObjectId.isValid(id)) {
+        return res.status(404).send();
+    }
+    try {
+        const employee = await Employee.findByIdAndRemove({
+            _id: id
+        });
+        if (!employee) {
+            return res.status(404).send();
+        }
+        res.send(employee);
+    } catch (e) {
+        res.status(400).send(e);
+    }
+});
+
+//returns list of the department employees
+app.get('/departments/:id', async (req, res) => {
     const id = req.params.id;
     if (!ObjectId.isValid(id)) {
         return res.status(404).send();
@@ -68,7 +121,7 @@ app.get('/department/:id', async (req, res) => {
     } catch (e) {
         res.status(400).send(e);
     }
-})
+});
 
 
 app.listen(port, () => {
